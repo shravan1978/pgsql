@@ -1,0 +1,67 @@
+# This is example inventory file!
+# Please specify the ip addresses and connection settings for your environment
+# The specified ip addresses will be used to listen by the cluster components.
+
+# "postgresql_exists='true'" if PostgreSQL is already exists and running on master (for initial deployment only)
+# "hostname=" variable is optional (used to change the server name)
+
+# if dcs_exists: false and dcs_type: "etcd" (in vars/main.yml)
+[etcd_cluster]  # recommendation: 3 or 5-7 nodes
+10.128.64.140
+10.128.64.142
+10.128.64.143
+
+
+# if with_haproxy_load_balancing: true (in vars/main.yml)
+[balancers]
+10.128.64.140
+10.128.64.142
+10.128.64.143
+
+
+# PostgreSQL nodes
+[master]
+10.128.64.140 hostname=pgnode01 postgresql_exists='false'
+
+[replica]
+10.128.64.142 hostname=pgnode02
+10.128.64.143 hostname=pgnode03
+
+[postgres_cluster:children]
+master
+replica
+
+
+# In this example, all components will be installed on PostgreSQL nodes
+# You can deploy the etcd cluster and the haproxy balancers on other dedicated servers. 
+
+
+# if pgbackrest_install: true and "repo_host" is set (in vars/main.yml)
+[pgbackrest]  # optional (Dedicated Repository Host)
+
+
+# Connection settings
+[all:vars]
+ansible_connection='ssh'
+ansible_ssh_port='22'
+ansible_user='root'
+ansible_ssh_pass: !vault |
+	  $ANSIBLE_VAULT;1.1;AES256
+	  65393333666530333836653064613332353535633930333631613932353132336231343636343639
+	  3235623835653736383134313330303435656463656237630a663534633835303430376432373138
+	  65393132336630336662393436653338316337343837326366313930386461636539333133623864
+	  3939383930313064370a313761393735633663373836653461633031626534343961643238646364
+	  6634
+
+# ansible_ssh_private_key_file=
+# ansible_python_interpreter='/usr/bin/python3'  # is required for use python3
+
+[pgbackrest:vars]
+ansible_user='postgres'
+ansible_ssh_pass: !vault |
+	  $ANSIBLE_VAULT;1.1;AES256
+	  65393333666530333836653064613332353535633930333631613932353132336231343636343639
+	  3235623835653736383134313330303435656463656237630a663534633835303430376432373138
+	  65393132336630336662393436653338316337343837326366313930386461636539333133623864
+	  3939383930313064370a313761393735633663373836653461633031626534343961643238646364
+	  6634
