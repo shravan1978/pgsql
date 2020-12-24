@@ -10,7 +10,7 @@
 
     - name: Validating whether ssh-keys exist for user "{{ ssh_key_user }}" in ~/.ssh/id_rsa 
       stat:
-        path: "{{ ssh_key_user }}"/.ssh/id_rsa
+        path: "~{{ ssh_key_user }}/.ssh/id_rsa"
       register: result
 
     - name: Printing validation results if found
