@@ -6,4 +6,4 @@
 - name: Printing validation results if found
   debug:
     msg: "Validation successfull /etc/hosts exists"
-  register: result.stat.exists == true
+  when: result.stat.exists == true
